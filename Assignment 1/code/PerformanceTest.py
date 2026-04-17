@@ -7,13 +7,13 @@ def benchmark():
     
     # Benchmark Explicit
     start = time.perf_counter()
-    _ = rf.analyze_convergence_range(temp_min, temp_max, steps, 'explicit', damping=True)
+    _ = rf.analyze_convergence_range(temp_min, temp_max, steps, 'newton', 'explicit', damping=True)
     end = time.perf_counter()
     time_explicit = end - start
     
     # Benchmark FD
     start = time.perf_counter()
-    _ = rf.analyze_convergence_range(temp_min, temp_max, steps, 'fd', damping=True)
+    _ = rf.analyze_convergence_range(temp_min, temp_max, steps, 'newton', 'fd', damping=True)
     end = time.perf_counter()
     time_fd = end - start
     

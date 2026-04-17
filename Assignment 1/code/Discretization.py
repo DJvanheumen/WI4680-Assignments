@@ -9,17 +9,17 @@ EMISSIVITY = 0.61                                       # epsilon_0
 BOLTZMANN_CONSTANT = 5.67*1e-8                          # sigma_0 [Wm^-2K^-4]
 INVERSE_TEMPERATURE = 0.1                               # M [K^-1]
 DISPERSION_COEFFICIENT = 0.3                            # D [Wm^-2K^-1]
-#GREENHOUSE_EFFECT = 30                                 # mu [Wm^-2]
-GREENHOUSE_EFFECT = 0                                   # mu [Wm^-2]
+GREENHOUSE_EFFECT = 30                                  # mu [Wm^-2]
+#GREENHOUSE_EFFECT = 0                                   # mu [Wm^-2]
 HEAT_CAPACITY = 5*1e8                                   # C_T [Jm^-2K^-1]
 MIXED_POINT = 273                                       # T^* [K]
 LEGENDRE_COEFFICIENT = 0.482                            # Order 2
-NUMBER_OF_LEGENDRE_POLYNOMIALS = 6                     # N 
-#NUMBER_OF_LEGENDRE_POLYNOMIALS = 24                     # N 
+NUMBER_OF_LEGENDRE_POLYNOMIALS = 6                      # N 
+#NUMBER_OF_LEGENDRE_POLYNOMIALS = 24                    # N 
 
-#D = DISPERSION_COEFFICIENT
-#D = 30
-D = 0.003
+D = DISPERSION_COEFFICIENT                              # Normal
+#D = 30                                                 # Easy
+#D = 0.003                                              # Hard
 
 latitude_nodes, weights = roots_legendre(NUMBER_OF_LEGENDRE_POLYNOMIALS + 1)
 
@@ -63,8 +63,9 @@ def calculate_residual(a_coeffs):
     total_residual = nonlinear_residual - dispersion_projection
     return total_residual
 
-# guess
-# a = np.zeros(NUMBER_OF_LEGENDRE_POLYNOMIALS + 1)
-# a[0] = 270
-# results = calculate_residual(a)
-# print(results)
+if __name__ == "__main__":
+    # guess
+    a = np.zeros(NUMBER_OF_LEGENDRE_POLYNOMIALS + 1)
+    a[0] = 270
+    results = calculate_residual(a)
+    print(results)

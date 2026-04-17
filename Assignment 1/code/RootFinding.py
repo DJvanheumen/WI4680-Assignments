@@ -7,9 +7,9 @@ TOLERANCE = 1e-9
 MAX_NUMBER_OF_ITERATIONS = 50       # Newton
 MAX_NUMBER_OF_ITERATIONS_B = 50     # Broyden
 ALPHA = 1e-4
-#D = disc.DISPERSION_COEFFICIENT     # Normal
+D = disc.DISPERSION_COEFFICIENT     # Normal
 #D = 30                              # Easy
-D = 0.003                            # Hard   
+#D = 0.003                            # Hard   
 
 def compute_explicit_jacobian(a_coeffs):
     temp_nodes = disc.P @ a_coeffs
@@ -59,32 +59,44 @@ def newton_raphson(f, a0, jac_type, damping):
                 return a, n, gamma_min, True
             else:
                 return a, n, gamma_min, False
+            
         if jac_type == 'explicit':
             J = compute_explicit_jacobian(a)
+
         elif jac_type == 'fd':
             J = compute_jacobian(f, a) 
+
         else:
             print('This method is currently not supported')
             return a, n, 0.0, False
+        
         try:
             delta_a = np.linalg.solve(J, -res)
+
             if damping:
                 gamma = 1.0
+
                 while gamma > ALPHA:
                     a_new = a + gamma * delta_a
+
                     if a_new[0] < 150 or a_new[0] > 400:
                         gamma *= 0.5
                         continue
                         
                     res_next_norm = np.linalg.norm(f(a_new))
+
                     if res_next_norm < (1 - ALPHA * gamma) * res_norm:
                         break
+
                     gamma *= 0.5 
+
                 a = a_new
                 a[1::2] = 0.0
                 gamma_min = min(gamma, gamma_min)
+
             else:
                 a += delta_a
+
         except np.linalg.LinAlgError:
             return a, n, 0.0, False
             
@@ -96,8 +108,10 @@ def broyden(f, a0, jac_type):
 
     if jac_type == 'explicit':
         B = compute_explicit_jacobian(a)
+
     elif jac_type == 'fd':
-        B = compute_jacobian(f,a)
+        B = compute_jacobian(f, a)
+
     else:
         print("This method is currently not supported")
         return a, 0.0, False
@@ -128,7 +142,7 @@ def analyze_convergence_range(temp_min, temp_max, steps, jac_type, method, dampi
     results = []
     jacobian_errors = [] 
     
-    print(f"Sweeping {method} Jacobian from {temp_min}K to {temp_max}K...")
+    print(f"Sweeping {method} Jacobian from {temp_min} K to {temp_max} K...")
     
     for T_start in initial_temps:
         a_guess = np.zeros(disc.NUMBER_OF_LEGENDRE_POLYNOMIALS + 1)
@@ -149,6 +163,7 @@ def analyze_convergence_range(temp_min, temp_max, steps, jac_type, method, dampi
 
             if success:
                 results.append((T_start, iters, sol[0], 1.0)) 
+
             else:
                 results.append((T_start, -1, np.nan, 0.0)) 
         
@@ -162,6 +177,7 @@ def analyze_convergence_range(temp_min, temp_max, steps, jac_type, method, dampi
             
             if success:
                 results.append((T_start, iters, sol[0], gamma)) 
+
             else:
                 results.append((T_start, -1, np.nan, 0.0)) 
                 
@@ -212,9 +228,11 @@ if __name__ == "__main__":
     
     if len(unique_newton) == len(unique_broyden):
         diff = np.abs(unique_newton - unique_broyden)
+
         if np.min(diff) < 1e-6:
             print(f"Looks like an unique point")
             print(diff)
+
         print(f"Difference: {np.max(diff):.9e} K")
 
 

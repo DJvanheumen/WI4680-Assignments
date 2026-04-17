@@ -1,10 +1,8 @@
 import numpy as np
 from scipy.signal import argrelextrema
-#from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import matplotlib.pyplot as plt
 import Discretization as disc
 import RootFinding as rf
-
 
 def compute_explicit_jacobian_local(a_coeffs, D):
     temp_nodes = disc.P @ a_coeffs
@@ -275,45 +273,45 @@ def plot_eigenvalue_spectrum(results, D):
 
     return fig
 
+if __name__ == "__main__":
+    # Start with your guess
+    a_guess = np.zeros(disc.NUMBER_OF_LEGENDRE_POLYNOMIALS + 1)
+    a_guess[0] = 230
+    mu_0 = 0
+    mu_final = 100
+    zeta = 0.5
+    ds = 1
+    D = disc.DISPERSION_COEFFICIENT                #(5c)
+    #D = 30                                         #(5e) - easy
+    #D = 0.003                                       #(5e) - hard
 
-# Start with your guess
-a_guess = np.zeros(disc.NUMBER_OF_LEGENDRE_POLYNOMIALS + 1)
-a_guess[0] = 230
-mu_0 = 0
-mu_final = 100
-zeta = 0.5
-ds = 1
-#D = disc.DISPERSION_COEFFICIENT                #(5c)
-#D = 30                                         #(5e) - easy
-D = 0.003                                       #(5e) - hard
+    # Pre-solve to settle 
+    a_stable, iters, _, success = rf.newton_raphson(
+        lambda a: get_residual_mu(a, mu_0, D), 
+        a_guess, 
+        jac_type='explicit', 
+        damping=False
+    )
 
-# Pre-solve to settle 
-a_stable, iters, _, success = rf.newton_raphson(
-    lambda a: get_residual_mu(a, mu_0, D), 
-    a_guess, 
-    jac_type='explicit', 
-    damping=False
-)
+    # Start continuation
+    if success:
+        print(f"True starting state found in {iters} iterations.")
+        print(f"Stable a_coeffs: {a_stable}")
+        results = run_continuation(a_stable, mu_0, mu_final, D, ds,  zeta)
+        for n in range(1, len(results)):
+            if results[n] is None:
+                print(n)
+        tp_indices, ev_history = find_bifurcation_points(results, D)
 
-# Start continuation
-if success:
-    print(f"True starting state found in {iters} iterations.")
-    print(f"Stable a_coeffs: {a_stable}")
-    results = run_continuation(a_stable, mu_0, mu_final, D, ds,  zeta)
-    for n in range(1, len(results)):
-        if results[n] is None:
-            print(n)
-    tp_indices, ev_history = find_bifurcation_points(results, D)
+        bif_mu = results[tp_indices, 0]
+        bif_a0 = results[tp_indices, 1]
+        
+        plot_climate_analysis(results)
 
-    bif_mu = results[tp_indices, 0]
-    bif_a0 = results[tp_indices, 1]
-    
-    plot_climate_analysis(results)
+        for idx in tp_indices:
+            print(f"Bifurcation at mu={results[idx,0]:.2f}, Leading EV={ev_history[idx]:.2e}")
 
-    for idx in tp_indices:
-        print(f"Bifurcation at mu={results[idx,0]:.2f}, Leading EV={ev_history[idx]:.2e}")
+        plot_eigenvalue_spectrum(results, D)
 
-    plot_eigenvalue_spectrum(results, D)
-
-else:
-    print("Could not find a valid starting equilibrium at mu=0.")
+    else:
+        print("Could not find a valid starting equilibrium at mu=0.")
