@@ -1,4 +1,4 @@
-Assignment 1: The Earth's Energy Balance
+## Assignment 1: The Earth's Energy Balance
 
 Contains code and figures corresponding to the first assignment about the effects of climate change 
 on the temperature distribution in a simplified one dimensional space. The report can be found at: 
