@@ -139,7 +139,7 @@ def plot_frequency_profile(proc):
     eps_P1 = proc['im_hopf'][idx_default]
 
     ax.plot(rf.P1, eps_P1, 'o', ms=10, color='purple')
-    ax.set_ylabel(r'$|\omega|$', rotation=0, labelpad=20, va='center')
+    ax.set_ylabel(r'$\omega$', rotation=0, labelpad=20, va='center')
     ax.yaxis.set_label_coords(-0.04, 1.0) 
     ax.set_xlabel(r'$\lambda$')
     ax.set_title('Frequency Plot')
@@ -161,8 +161,8 @@ if __name__ == "__main__":
         hopf_criteria = res['hopf_flags']
         existence, non_degeneracy, transversality = hopf_criteria
     
-        #plot_continuation_profile(res)
-        #plot_stability_test(res)
+        plot_continuation_profile(res)
+        plot_stability_test(res)
         plot_frequency_profile(res)
         
         # Hopf criteria check
