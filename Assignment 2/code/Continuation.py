@@ -161,9 +161,9 @@ if __name__ == "__main__":
         hopf_criteria = res['hopf_flags']
         existence, non_degeneracy, transversality = hopf_criteria
     
-        plot_continuation_profile(res)
-        plot_stability_test(res)
-        plot_frequency_profile(res)
+        #plot_continuation_profile(res)
+        #plot_stability_test(res)
+        #plot_frequency_profile(res)
         
         # Hopf criteria check
         if all(hopf_criteria):
@@ -177,8 +177,8 @@ if __name__ == "__main__":
             x2 = state_at_bif[1]
             x3 = state_at_bif[2]
 
-            print(f"Hopf Bifurcation confirmed at lambda = {l_tilde:.2f}")
-            print(f"State Space: ({x1:.2f}, {x2:.2f}, {x3:.2f})")
+            print(f"Hopf Bifurcation confirmed at lambda = {l_tilde}")
+            print(f"State Space: ({x1}, {x2}, {x3:.2f})")
             print(f"Period of limit cycle: {period_limit_cycle:.2f}")
 
         else:

@@ -6,6 +6,12 @@ Here the code and figures are provided for the second assignment. Modeling cance
 
 ### RootFinding.py
 
+### Continuation.py
+
+### LimitCycle.py
+
+### PeriodDoubling.py
+
 ## Figures
 
 ## Report
