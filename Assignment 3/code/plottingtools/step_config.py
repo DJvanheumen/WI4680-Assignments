@@ -1,5 +1,6 @@
 # Normal
 dpi = 120                   # dpi for visualisation
+savedpi = 300               # dpi when saving to file via show(fname=...)
 wunit = 3.5                 # single width unit (inch)
 hunit = 2.8                 # single height unit (inch)
 markersize = 6.0            # markersize for all markers

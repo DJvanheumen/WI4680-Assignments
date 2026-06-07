@@ -7,7 +7,7 @@ mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 import plottingtools as st
 from timeintegrator import time_integrator
-from rootfinding import Newton, Newton_small
+from rootfinding import newton, newton_small
 import numpy as np
 colours = st.configure()
 from copy import copy
@@ -17,7 +17,7 @@ from copy import copy
 Functions and Jacobians
 ########################################################################################################################
 """
-def Fun(y, B, params):              ## Functions for Rac and Rho, returns the d/dt
+def fun(y, B, params):              ## Functions for Rac and Rho, returns the d/dt
     A, R0, rho0, deltaR, n = params
     R = y[0]
     rho = y[1]
@@ -26,18 +26,18 @@ def Fun(y, B, params):              ## Functions for Rac and Rho, returns the d/
     F[1] = B/(R0**n + R**n)*(1-rho)-rho
     return F
 
-def Fun_ext(y, params):         ## Extended function with parameter; with F[2] dB/dt.
+def fun_ext(y, params):         ## Extended function with parameter; with F[2] dB/dt.
     A, R0, rho0, deltaR, n, Bmax, eps = params
     F = np.zeros(3)
     B = y[2]
-    F[:2] = Fun(y[:2], B, (A, R0, rho0, deltaR, n))
+    F[:2] = fun(y[:2], B, (A, R0, rho0, deltaR, n))
     ##### adapt the code here for changing dB/dt
     F[2] = eps
     # F[2] = eps*(Bmax-B)/Bmax
     #####
     return F
 
-def Jac(y, B, params):          ## Jacobian
+def jac(y, B, params):          ## Jacobian
     A, R0, rho0, deltaR, n = params
     R = y[0]
     rho = y[1]
@@ -48,7 +48,7 @@ def Jac(y, B, params):          ## Jacobian
     J[1,1] = -B/(R0**n+R**n)-1
     return J
 
-def Jac_B(y, B, params):        ## Derivative w.r.t. B
+def jac_B(y, B, params):        ## Derivative w.r.t. B
     A, R0, rho0, deltaR, n = params
     R = y[0]
     rho = y[1]
@@ -85,15 +85,15 @@ def run_continuation(params, B0, Bmax_bifdiag, ds):
     evs = []        # largest eigenvalues
     all_evs = []    # list of all eigenvalues
 
-    # Find equilibrium for B = B0 (Newton on the original 2D system)
+    # Find equilibrium for B = B0 (newton on the original 2D system)
     y0 = np.array([1, 1])
     B = B0
-    y = Newton_small(Fun, Jac, y0, B, params)
+    y = newton_small(fun, jac, y0, B, params)
 
     # add results for B0 to the array
     B_arr.append(B)
     y_arr.append(y)
-    ev = np.linalg.eigvals(Jac(y, B, params))
+    ev = np.linalg.eigvals(jac(y, B, params))
     evs.append(np.max(np.real(ev)))
     all_evs.append((np.real(ev)))
 
@@ -103,8 +103,8 @@ def run_continuation(params, B0, Bmax_bifdiag, ds):
         # predictor
         J = np.zeros((3, 3))
         rhs = np.zeros(3)
-        J[:2, :2] = Jac(y, B, params)
-        J[:2, -1] = Jac_B(y, B, params)
+        J[:2, :2] = jac(y, B, params)
+        J[:2, -1] = jac_B(y, B, params)
         J[-1, 1] = 1
         rhs[-1] = 1
         z = np.linalg.solve(J, rhs)             # z contains components da/ds and dmu/ds
@@ -113,10 +113,10 @@ def run_continuation(params, B0, Bmax_bifdiag, ds):
         B_pred = B + z_rescale[-1] * ds
 
         # corrector
-        y, B = Newton(Fun, Jac, Jac_B, y_pred, B_pred, y, B, ds, params)
+        y, B = newton(fun, jac, jac_B, y_pred, B_pred, y, B, ds, params)
 
         # eigenvalues for assessing stability
-        ev = np.linalg.eigvals(Jac(y, B, params))
+        ev = np.linalg.eigvals(jac(y, B, params))
         evs.append(np.max(np.real(ev)))         # save maximum real value of evs
         all_evs.append((np.real(ev)))
 
@@ -170,7 +170,7 @@ if __name__ == '__main__':
 
     # the time integrator has arguments: function, parameter list, tuple of initial conditions (R, rho, B), time step, end time.
     # y_tim has shape (3, length(t)). In the first dimension it has entries Rac, rho, B
-    t, y_tim = time_integrator(Fun_ext, params_ext, (0.1, 0.05, 0.03), dt, T)
+    t, y_tim = time_integrator(fun_ext, params_ext, (0.1, 0.05, 0.03), dt, T)
 
     ########################################################################################################################
     # Plot
