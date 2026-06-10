@@ -6,12 +6,12 @@ the parameter B: its equilibria, their stability, and the different routes by wh
 cell can "tip" from one polarisation state to another (bifurcation-induced and
 rate-induced tipping).
 
-## code
-
-### Requirements
+## Requirements
 
 Install python and pip. Use pip to install the libraries listed in `requirements.txt`
 (numpy and matplotlib), e.g. `pip install -r requirements.txt`.
+
+## code
 
 ### main.py
 
