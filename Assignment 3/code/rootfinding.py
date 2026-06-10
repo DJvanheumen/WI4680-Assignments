@@ -2,6 +2,9 @@
 Newton method
 """
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)   # silent by default; enable with logging.basicConfig(level=logging.DEBUG)
 
 
 def newton(function, Jac, Jac_l, y, l, yprev, lprev, ds, params):   # Newton for extended system (incl parameter)
@@ -26,7 +29,7 @@ def newton(function, Jac, Jac_l, y, l, yprev, lprev, ds, params):   # Newton for
         l = l + dl
         counter += 1
         diff = np.linalg.norm(dy)/np.linalg.norm(y)
-    print('parameter value: ', np.round(l, 6), 'Newton iterations: ', counter, 'relative change: ', diff)
+    logger.debug('parameter value: %s, Newton iterations: %d, relative change: %g', np.round(l, 6), counter, diff)
     return y, l
 
 def newton_small(function, Jac, y, l, params):          # Newton for original system (excl parameter)
@@ -46,7 +49,7 @@ def newton_small(function, Jac, y, l, params):          # Newton for original sy
         y = y + dy
         counter += 1
         diff = np.linalg.norm(dy)/np.linalg.norm(y)
-    print('parameter value: ', np.round(l, 6), ', Newton iterations: ', counter, ', relative change: ', diff)
+    logger.debug('parameter value: %s, Newton iterations: %d, relative change: %g', np.round(l, 6), counter, diff)
     return y
 
 

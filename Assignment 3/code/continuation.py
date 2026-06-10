@@ -26,15 +26,22 @@ def fun(y, B, params):              ## Functions for Rac and Rho, returns the d/
     F[1] = B/(R0**n + R**n)*(1-rho)-rho
     return F
 
-def fun_ext(y, params):         ## Extended function with parameter; with F[2] dB/dt.
+def fun_ext(y, params):         ## Extended function with parameter; dB/dt = eps  (Q3: linear, unbounded drift)
     A, R0, rho0, deltaR, n, Bmax, eps = params
     F = np.zeros(3)
     B = y[2]
     F[:2] = fun(y[:2], B, (A, R0, rho0, deltaR, n))
     ##### adapt the code here for changing dB/dt
     F[2] = eps
-    # F[2] = eps*(Bmax-B)/Bmax
     #####
+    return F
+
+def fun_ext_sat(y, params):     ## Extended function; dB/dt = eps*(Bmax-B)/Bmax  (Q4: B saturates at Bmax -> rate-induced tipping)
+    A, R0, rho0, deltaR, n, Bmax, eps = params
+    F = np.zeros(3)
+    B = y[2]
+    F[:2] = fun(y[:2], B, (A, R0, rho0, deltaR, n))
+    F[2] = eps*(Bmax - B)/Bmax
     return F
 
 def jac(y, B, params):          ## Jacobian
